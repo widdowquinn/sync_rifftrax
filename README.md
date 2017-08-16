@@ -21,6 +21,7 @@
   13. [Merge movie and RiffTrax audio](#merge)
   14. [Multiplex video and synced audio](#mux)
   15. [Confirm output](#check)
+  16. [Summary](#summary)
 
 
 <a name="requirements"></a>
@@ -94,6 +95,13 @@ $ mkvinfo Gravity.mkv
 [...]
 ```
 Here, we have identified track 1, and can extract it to the file `audio.ac3` with `mkvextract`:
+
+You can get straight to the track info with the following command:
+
+```
+mkvinfo Gravity.mkv | grep -A 6 mkvextract
+```
+
 
 ```
 mkvextract tracks Gravity.mkv 1:audio.ac3
@@ -241,4 +249,16 @@ The settings above do the following:
 ### 15. check the final output
 
 * Play the newly-muxed video in a suitable player and make sure everything's in sync
-* If everything seems fine, you're done!  
+* If everything seems fine, you're done!
+
+<a  name="summary"></a>
+## Summary
+
+```
+ffmpeg -i <movie>.m4v -c:v copy -c:a copy <movie>.mkv
+mkvinfo <movie>.mkv | grep -A 6 mkvextract
+mkvextract tracks <movie>.mkv 1:audio.ac3
+ffmpeg -i audio.ac3 -ac 2 audio.wav
+ffmpeg -i <movie>.mkv -i audio.mp3 -map 0:v:0 -map 1:a:0 -c:v copy -c:a libfdk_aac \
+  -metadata title="RiffTrax: <Movie>" -y "RiffTrax - S01E0?? - <Movie>.mp4"
+```
