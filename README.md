@@ -273,3 +273,7 @@ In some cases, there is no PAL audio available for a RiffTrax commentary (e.g. s
 * Import the NTSC `.mp3` track
 * In `Audacity`, use `Effects -> Change Tempo` and set the percentage change to `4.271` (if you want to convert PAL to NTSC, the change is `-4.096`)
 * Click `OK`
+
+### Correcting RiffTrax PAL speed
+
+Some RiffTrax PAL audio (e.g. Return of the King) is not quite synced with PAL DVDs. These often need a small speed-up, with a tempo change of ≈`0.125` as above.
