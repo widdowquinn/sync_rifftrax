@@ -22,7 +22,7 @@
   14. [Multiplex video and synced audio](#mux)
   15. [Confirm output](#check)
   16. [Summary](#summary)
-
+* [Extras](#extras)
 
 <a name="requirements"></a>
 ## Requirements
@@ -251,8 +251,8 @@ The settings above do the following:
 * Play the newly-muxed video in a suitable player and make sure everything's in sync
 * If everything seems fine, you're done!
 
-<a  name="summary"></a>
-## Summary
+<a name="summary"></a>
+### Summary
 
 ```
 ffmpeg -i <movie>.m4v -c:v copy -c:a copy <movie>.mkv
@@ -262,3 +262,14 @@ ffmpeg -i audio.ac3 -ac 2 audio.wav
 ffmpeg -i <movie>.mkv -i audio.mp3 -map 0:v:0 -map 1:a:0 -c:v copy -c:a libfdk_aac \
   -metadata title="RiffTrax: <Movie>" -y "RiffTrax - S01E0?? - <Movie>.mp4"
 ```
+
+<a name="extras"></a>
+## Extras
+
+### NTSC to PAL audio tempo change
+
+In some cases, there is no PAL audio available for a RiffTrax commentary (e.g. single-disc Lord of the Rings, Part One). In these cases, it is possible to use the NTSC-synced audio, and speed it up in order to match PAL framerates.
+
+* Import the NTSC `.mp3` track
+* In `Audacity`, use `Effects -> Change Tempo` and set the percentage change to `4.271` (if you want to convert PAL to NTSC, the change is `-4.096`)
+* Click `OK`
