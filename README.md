@@ -54,7 +54,7 @@ brew tap homebrew-ffmpeg/ffmpeg
 brew install homebrew-ffmpeg/ffmpeg/ffmpeg --with-fdk-aac
 ```
 
-## Instructions
+## Instructions
 
 ### 1. rip the video to `.m4v`
 
