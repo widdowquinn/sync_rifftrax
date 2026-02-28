@@ -119,8 +119,7 @@ def compile_movie(
     # Add outputs
     cmd += ["-y", str(outpath)]
 
-    print(str(" ".join(cmd)))
-
+    # Run compiled command
     res = subprocess.run(cmd, capture_output=True)
 
     if 0 == res.returncode:
