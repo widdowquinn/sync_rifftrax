@@ -3,3 +3,7 @@
 
 # Ignore temp files
 *~
+
+# distribution files
+*.egg-info
+__pycache__
