@@ -4,15 +4,16 @@
 
 <!-- TOC -->
 
-- [Table of Contents](#table-of-contents)
-- [Requirements](#requirements)
-- [Notes on installation](#notes-on-installation)
+- [Syncing RiffTrax to Ripped Video (Mac)](#syncing-rifftrax-to-ripped-video-mac)
+  - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Notes on installation](#notes-on-installation)
     - [`ffmpeg`](#ffmpeg)
-- [Instructions](#instructions)
+    - [`mkvtoolnix`](#mkvtoolnix)
+    - [`srt_presync` and `srt_postsync`](#srt_presync-and-srt_postsync)
+  - [Instructions](#instructions)
     - [1. rip the video to `.m4v`](#1-rip-the-video-to-m4v)
-    - [2. convert container to `.mkv`](#2-convert-container-to-mkv)
-    - [3. identify and extract audio track from the video](#3-identify-and-extract-audio-track-from-the-video)
-    - [4. convert movie audio to `.wav` (and 5.1 sound to stereo)](#4-convert-movie-audio-to-wav-and-51-sound-to-stereo)
+    - [2. extract movie to .mkv (video), .ac3 (audio), and .ass (subtitles)](#2-extract-movie-to-mkv-video-ac3-audio-and-ass-subtitles)
     - [5. create new `Audacity` project with movie audio](#5-create-new-audacity-project-with-movie-audio)
     - [6. compress movie audio](#6-compress-movie-audio)
     - [7. import RiffTrax audio to the `Audacity` project](#7-import-rifftrax-audio-to-the-audacity-project)
@@ -25,7 +26,7 @@
     - [14. multiplex (mux) the movie and audio](#14-multiplex-mux-the-movie-and-audio)
     - [15. check the final output](#15-check-the-final-output)
     - [Summary](#summary)
-- [Extras](#extras)
+  - [Extras](#extras)
     - [NTSC to PAL audio tempo change](#ntsc-to-pal-audio-tempo-change)
     - [Correcting RiffTrax PAL speed](#correcting-rifftrax-pal-speed)
 
@@ -54,70 +55,60 @@ brew tap homebrew-ffmpeg/ffmpeg
 brew install homebrew-ffmpeg/ffmpeg/ffmpeg --with-fdk-aac
 ```
 
+### `mkvtoolnix`
+
+This package needs to be installed in order to manipulate `.mkv` files and extract streams. It is available via `homebrew`:
+
+```bash
+brew install mkvtoolnix
+```
+
+### `srt_presync` and `srt_postsync`
+
+These applications can be installed by cloning this GitHub repository and using `pip` as follows:
+
+```bash
+git clone git@github.com:widdowquinn/sync_rifftrax.git
+cd sync_rifftrax
+pip install .
+```
+
+You can check that the installation completed successfully by issuing, e.g.
+
+```bash
+% srt_presync --help
+
+ Usage: srt_presync [OPTIONS]
+
+ Entry point for sre_presync
+
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ *  --moviepath                 PATH  Path to movie for extraction [required]                                                           │
+│    --outpath                   PATH  Directory for output files [default: .]                                                           │
+│    --outstem                   TEXT  Stem for output files [default: movie]                                                            │
+│    --install-completion              Install completion for the current shell.                                                         │
+│    --show-completion                 Show completion for the current shell, to copy it or customize the installation.                  │
+│    --help                            Show this message and exit.                                                                       │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+```
+
 ## Instructions
 
 ### 1. rip the video to `.m4v`
 
 If you need to do this, HandBrake may be useful.
 
-### 2. convert container to `.mkv`
+### 2. extract movie to .mkv (video), .ac3 (audio), and .ass (subtitles)
+
+Use the `srt_presync.py` script to extract video, audio, and subtitle streams. The command below:
 
 ```bash
-ffmpeg -i Gravity.m4v -codec:v copy -codec:a copy Gravity.mkv
+srt_presync.py --moviepath Gravity.m4v --outstem Gravity --outpath movie_export
 ```
 
-### 3. identify and extract audio track from the video
+will extract these files into the `movie_export` folder, with filestem `Gravity`.
 
-Use `mkvinfo` to identify the relevant track. You are looking for a track with Codec ID of `A_AAC`. It may have 2 tracks (stereo) or 6 (5.1). We want to identify the `track ID for mkvmerge & mkvextract` track number.
-
-```bash
-$ mkvinfo Gravity.mkv
-+ EBML head
-|+ EBML version: 1
-|+ EBML read version: 1
-|+ EBML maximum ID length: 4
-|+ EBML maximum size length: 8
-|+ Doc type: matroska
-|+ Doc type version: 4
-|+ Doc type read version: 2
-[...]
-| + A track
-|  + Track number: 2 (track ID for mkvmerge & mkvextract: 1)
-|  + Track UID: 2
-|  + Lacing flag: 0
-|  + Language: eng
-|  + Default flag: 0
-|  + Codec ID: A_AAC
-|  + Track type: audio
-|  + Audio track
-|   + Channels: 6
-|   + Sampling frequency: 48000
-|   + Bit depth: 16
-|  + CodecPrivate, length 2
-[...]
-```
-
-Here, we have identified track 1, and can extract it to the file `audio.ac3` with `mkvextract`:
-
-You can get straight to the track info with the following command:
-
-```bash
-mkvinfo Gravity.mkv | grep -A 6 mkvextract
-```
-
-```bash
-mkvextract tracks Gravity.mkv 1:audio.ac3
-```
-
-### 4. convert movie audio to `.wav` (and 5.1 sound to stereo)
-
-For import into the `Audacity` audio file editor, convert the movie audio to `.wav` with `ffmpeg`:
-
-```bash
-ffmpeg ‐i audio.ac3 ‐ac 2 audio.wav
-```
-
-The command above also converts the input audio to two channels (stereo).
+Note that all subtitle streams will be extracted with names like `Gravity_subs2.ass`, `Gravity_subs3.ass` and so on.
 
 ### 5. create new `Audacity` project with movie audio
 
@@ -216,40 +207,39 @@ To even up the loud and quiet parts of the movie track, we use *compression*.
 
 ### 14. multiplex (mux) the movie and audio
 
-Use `ffmpeg` to take the original movie video stream, and your new mixed audio, and combine them in a new `.mp4` movie
+Use `srt_postsync.py` to compile desired video, audio, and subtitle streams into a new output file. The `srt_postsync.py` application can combine multiple audio and subtitle streams (with language metadata) if desired, as in the example below. This allows you to keep the commentary and original audio, and any subtitles you wish.
 
 ```bash
-ffmpeg -i Gravity.mkv -i RiffTrax_Gravity.mp3 \
-       -map 0:v:0 -map 1:a:0 \
-       -c:v copy -c:a libfdk_aac \
-       -metadata title="RiffTrax: Gravity" -y \
-       RiffTrax_Gravity.mp4
+srt_postsync.py --videopath movie_export/Gravity.mkv \
+    --audiopaths movie_export/RiffTrax_Gravity.mp3,Gravity.wav \
+    --subspaths movie_export/Gravity_subs2.ass,movie_export/Gravity_subs3.ass \
+    --audiolangs eng,eng \
+    --subslangs eng,fra \
+    --title "RiffTrax: Gravity: \
+    --outdir riffed_movies \
+    --outstem RiffTrax_Gravity
 ```
-
-The settings above do the following:
-
-- merge the video file `Gravity.mkv` with the audio file `RiffTrax_Gravity.mp3`
-- produce an output file `RiffTrax_Gravity.mp4`
-- `map` the video from input stream 0 (`Gravity.mkv`) to output stream 0 (`RiffTrax_Gravity.mp4`): `-map 0:v:0`
-- `map` the audio from input stream 1 (`RiffTrax_Gravity.mp3`) to output stream 0 (`RiffTrax_Gravity.mp4`): `-map 1:a:0`
-- preserve the original video stream: `-c:v copy`
-- convert the audio stream to AAC: `-c:a libfdk_aac`
-- add a title: `-metadata title="RiffTrax: Gravity"`
 
 ### 15. check the final output
 
 - Play the newly-muxed video in a suitable player and make sure everything's in sync
 - If everything seems fine, you're done!
 
-### Summary
+### Summary
 
 ```bash
-ffmpeg -i <movie>.m4v -c:v copy -c:a copy <movie>.mkv
-mkvinfo <movie>.mkv | grep -A 6 mkvextract
-mkvextract tracks <movie>.mkv 1:audio.ac3
-ffmpeg -i audio.ac3 -ac 2 audio.wav
-ffmpeg -i <movie>.mkv -i audio.mp3 -map 0:v:0 -map 1:a:0 -c:v copy -c:a libfdk_aac \
-  -metadata title="RiffTrax: <Movie>" -y "RiffTrax - S01E0?? - <Movie>.mp4"
+srt_presync.py --moviepath Gravity.m4v \
+    --outstem Gravity \
+    --outpath movie_export
+srt_postsync.py --videopath movie_export/Gravity.mkv \
+    --audiopaths movie_export/RiffTrax_Gravity.mp3,Gravity.wav \
+    --subspaths movie_export/Gravity_subs2.ass,movie_export/Gravity_subs3.ass \
+    --audiolangs eng,eng \
+    --subslangs eng,fra \
+    --title "RiffTrax: Gravity: \
+    --outdir riffed_movies \
+    --outstem RiffTrax_Gravity
+
 ```
 
 ## Extras
