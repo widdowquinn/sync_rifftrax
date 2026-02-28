@@ -20,8 +20,8 @@ build-backend = "setuptools.build_meta"
 include = ["sync_rifftrax"]
 
 [project.scripts]
-"srt_presync.py" = "sync_rifftrax.srt_presync:app"
-"srt_postsync.py" = "sync_rifftrax.srt_postsync:app"
+"srt_presync" = "sync_rifftrax.srt_presync:app"
+"srt_postsync" = "sync_rifftrax.srt_postsync:app"
 
 [project.urls]
 homepage = "https://github.com/widdowquinn/sync_rifftrax"
