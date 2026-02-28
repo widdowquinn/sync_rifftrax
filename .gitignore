@@ -7,3 +7,4 @@
 # distribution files
 *.egg-info
 __pycache__
+build/
