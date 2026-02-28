@@ -1,0 +1,30 @@
+[project]
+name = "sync_rifftrax"
+version = "1.0.0"
+authors = [{name="Leighton Pritchard"}]
+description = "sync_rifftrax is tools and documentation to aid with splitting and compiling movie files with commentaries."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "rich",
+    "typer>=0.12"
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["sync_rifftrax"]
+
+[project.scripts]
+"srt_presync.py" = "sync_rifftrax.srt_presync:app"
+"srt_postsync.py" = "sync_rifftrax.srt_postsync:app"
+
+[project.urls]
+homepage = "https://github.com/widdowquinn/sync_rifftrax"
+source = "https://github.com/widdowquinn/sync_rifftrax"
+issues = "https://github.com/widdowquinn/sync_rifftrax/issues"
+documentation = "https://widdowquinn.github.io/sync_rifftrax/"
