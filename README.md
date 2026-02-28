@@ -9,6 +9,8 @@
   - [Requirements](#requirements)
   - [Notes on installation](#notes-on-installation)
     - [`ffmpeg`](#ffmpeg)
+    - [`mkvtoolnix`](#mkvtoolnix)
+    - [`srt_presync` and `srt_postsync`](#srt_presync-and-srt_postsync)
   - [Instructions](#instructions)
     - [1. rip the video to `.m4v`](#1-rip-the-video-to-m4v)
     - [2. extract movie to .mkv (video), .ac3 (audio), and .ass (subtitles)](#2-extract-movie-to-mkv-video-ac3-audio-and-ass-subtitles)
@@ -51,6 +53,43 @@ For these instructions, `ffmpeg` needs to be built with the Fraunhofer AAC codec
 ```bash
 brew tap homebrew-ffmpeg/ffmpeg
 brew install homebrew-ffmpeg/ffmpeg/ffmpeg --with-fdk-aac
+```
+
+### `mkvtoolnix`
+
+This package needs to be installed in order to manipulate `.mkv` files and extract streams. It is available via `homebrew`:
+
+```bash
+brew install mkvtoolnix
+```
+
+### `srt_presync` and `srt_postsync`
+
+These applications can be installed by cloning this GitHub repository and using `pip` as follows:
+
+```bash
+git clone git@github.com:widdowquinn/sync_rifftrax.git
+cd sync_rifftrax
+pip install .
+```
+
+You can check that the installation completed successfully by issuing, e.g.
+
+```bash
+% srt_presync --help
+
+ Usage: srt_presync [OPTIONS]
+
+ Entry point for sre_presync
+
+╭─ Options ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ *  --moviepath                 PATH  Path to movie for extraction [required]                                                           │
+│    --outpath                   PATH  Directory for output files [default: .]                                                           │
+│    --outstem                   TEXT  Stem for output files [default: movie]                                                            │
+│    --install-completion              Install completion for the current shell.                                                         │
+│    --show-completion                 Show completion for the current shell, to copy it or customize the installation.                  │
+│    --help                            Show this message and exit.                                                                       │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ## Instructions
